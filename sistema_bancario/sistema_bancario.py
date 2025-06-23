@@ -149,18 +149,19 @@ def poupanca():
     global saldo
     global extrato
     print("POUPANÇA".center(20, "="))
-    print(''''
+    print(f''''
     1: Aplicar
     2: Resgatar
-    3: Voltar''')
+    3: Voltar
+    Saldo: R$: {saldo_poupanca:.2f}      ''')
     print("=" * 20)
     while True:
         opcao_poupanca = input("Opção poupança: ")
         if opcao_poupanca not in "123":
             print("Opção inválida")
         elif opcao_poupanca == "1":
+            print(f"Aplicação\nSaldo conta corrente: R$: {saldo:.2f}\nSaldo conta poupança: R$: {saldo_poupanca:.2f}")
             valor_aplicacao = verificar_valor_erro()
-            print("Aplicação")
             if valor_aplicacao > saldo:
                 print(f"Saldo insuficiente para completar a transação.\nSeu saldo é de {saldo:.2f}")
             else:
@@ -169,20 +170,19 @@ def poupanca():
                 extrato += f"Aplicação na poupança: R$ {valor_aplicacao:.2f}\n"
                 print(f"Aplicação realizada. Valor: R$:{valor_aplicacao:.2f}")
         elif opcao_poupanca == "2":
-            print("Resgate")
+            print(f"Saldo conta poupança: R$: {saldo_poupanca:.2f}")
             valor_resgate = verificar_valor_erro()
             if saldo_poupanca <= 0:
                 print("Você não possui saldo para resgate.")
                 break
             else:
                 if valor_resgate > saldo_poupanca:
-                    print(f"Saldo insuficiente.\nSeu saldo é de R$: {saldo_poupanca:.2f}")
+                    print(f"Saldo insuficiente para resgate.\nSeu saldo é de R$: {saldo_poupanca:.2f}")
                 else:
                     saldo_poupanca -= valor_resgate
                     saldo += valor_resgate
                     extrato += f"Resgate da poupança: R$: {valor_resgate:.2f}\n"
                     print(f"Resgate realizado com sucesso. Valor: R$: {valor_resgate:.2f}")
-                    break
         else:
             print("Voltando ao menu.")
             break
@@ -227,7 +227,7 @@ while True:
             investimento()
     elif opcao == "p":
         if verificar("poupança") == "S":
-            poupanca("poupança")
+            poupanca()
     elif opcao == "x":
         break
     else:
