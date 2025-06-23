@@ -10,6 +10,10 @@ O sistema oferece as seguintes operações:
 * Saque: Retira fundos da conta, com validações para saldo suficiente e limite de saques/valor.
 
 * Extrato: Exibe o histórico de todas as transações (depósitos e saques), com saldos atualizados.
+  
+* Investimentos: Permite escolher uma opção entre renda fixa e variável e os diferentes tipos de cada uma
+  
+* Poupança: Deposita ou retira dinheiro da poupança
 
 ## ⚙️ Tecnologias Utilizadas
 Python 3.x: Linguagem de programação principal.
