@@ -16,138 +16,99 @@ def verificar_valor_erro():
             print("Valor inválido")
     return valor
 
-def deposito(txt):
-    global saldo
-    global extrato
+def deposito(txt, saldo, extrato, depositos_realizados,/):
     valor = verificar_valor_erro()
     if valor <= 0:
         print("Valor inválido.")
     else:
-        deposito_realizados.append(valor)
-        print(f"deposito de número: {len(deposito_realizados)}")
+        depositos_realizados.append(valor)
+        print(f"deposito de número: {len(depositos_realizados)}")
         saldo += valor
         extrato += f"Deposito: R$: {valor:.2f}\n"
+    return saldo, extrato
 
 
-def saque(txt):
-    global numero_saques
-    global saldo
-    global extrato
-    if numero_saques >= LIMITE_SAQUES:
+def saque(*,txt, saldo, extrato, limite, numero_saques, limite_saques):
+    if numero_saques >= limite_saques:
         print("Você já atingiu seu limite diário de saques.")
         return
     else:
         valor = verificar_valor_erro()
-        if valor > 500:
+        if valor > limite:
             print("Você pode sacar apenas R$: 500.00 por operação.")
         elif saldo < valor:
             print(f"Você não tem saldo suficiente para a operação. Saldo atual: R$: {saldo:.2f}")
         elif valor <= 0:
             print("Operação inválida.")
         else:
-            saques_realizados.append(valor)
-            print(f"saque de número: {len(saques_realizados)}")
             numero_saques += 1
             saldo -= valor
             extrato += f"Saque: R$: {valor:.2f}\n"
+        return saldo, extrato
 
+def Extrato(saldo,/,*, extrato):
+    print(" EXTRATO ".center(40, "="))
+    print(extrato)
+    print(f"Saldo: R$: {saldo:.2f}")
+    print("=" * 40)
+    return extrato
 
-
-def verifica_investimento(txt, rendimento):
-    global extrato
-    global saldo
-    print(f"Opção selecionada {txt} renda de {rendimento}% ao ano")
+def investimento(saldo, extrato, investimentos):
+    print("""
+    ========== Investimentos ==========
+          1: Renda Fixa
+          2: Renda Variável
+""")
     while True:
-        confirmar = input("Deseja continuar com a operação? [S/N]: ").upper().strip()
-        if confirmar not in "SN":
-            print("Digite apenas S ou N: ")
-        elif confirmar == "S":
-            try:
-                valor = float(input("Valor: R$: "))
-                if valor > saldo:
-                    print("Você nãpo possui saldo suficiente para completar a operação.")
-                    print("Voltando para o menu")
+        opcao_investimento = input("Digite X para voltar\nOpção: ").upper().strip()
+        if opcao_investimento not in "12X":
+            opcao_investimento = input("Opção: ")
+        elif opcao_investimento == "X":
+            return saldo, extrato
+        elif opcao_investimento == "1":
+            print("Opção selecionada: Renda fixa.\nRendimento de 10% ao ano")
+            while True:
+                confirma = input("Deseja continuar? [S/N]: ").upper().strip()
+                if confirma not in "SN":
+                    confirma = input("Deseja continuar? [S/N]: ").upper().strip()
+                elif confirma == "N":
                     break
-                elif valor < 10:
-                    print("Valor inválido. Minimo R$: 10.00")
                 else:
-                    saldo -= valor
-                    extrato += f"Investimento de R$: {valor:.2f} em {txt}"
-                    investimentos.append(valor)
+                    valor = float(input("R$"))
+                    if valor <= 0:
+                        print("Valor minimo R$10")
+                    elif valor > saldo:
+                        print("Você não possui saldo suficiente")
+                        break
+                    else:
+                        saldo -= valor
+                        extrato += f"Investimento Renda fixa: R${valor:.2f}"
+                        investimentos.append(valor)
+                        break
+        elif opcao_investimento == "2":
+            print("Opção selecionada: Renda Variável.\nRendimento variável ao ano")
+            while True:
+                confirma = input("Deseja continuar? [S/N]: ").upper().strip()
+                if confirma not in "SN":
+                    confirma = input("Deseja continuar? [S/N]: ").upper().strip()
+                elif confirma == "N":
                     break
-            except ValueError:
-                print("Valor inválido.")
-        elif confirmar == "N":
-            break
-                        
-               
+                else:
+                    valor = float(input("R$"))
+                    if valor <= 0:
+                        print("Valor minimo R$10")
+                    elif valor > saldo:
+                        print("Você não possui saldo suficiente")
+                        break
+                    else:
+                        saldo -= valor
+                        extrato += f"Investimento Renda fixa: R${valor:.2f}"
+                        investimentos.append(valor)
+                        break
+        return saldo, extrato
 
-def investimento():
-    while True:  
-        print('''======== Selecione a opção ========
-    1: Renda Fixa
-    2: Renda Variável
-    3: Verificar meus investimentos
-          ''')
-    
-        opcao = input("Opção de investimento: ")
-        if opcao not in "123":
-            print("Opção inválida")
-        
-        if opcao == "1":
-            print('''======== Investimentos de renda fixa ========
-    [a] CDB (Certificado de Depósito Bancário)
-    [b] LCI (Letra de Crédito Imobiliário)
-    [c] LCA (Letra de Crédito do Agronegócio)
-    [d] Tesouro Direto (Tesouro Selic, Tesouro IPCA+, Tesouro Prefixado)
-    [e] CRI (Certificado de Recebíveis Imobiliários)
-    [f] CRA (Certificado de Recebíveis do Agronegócio)
-                  ''')
-            opcao = input("Tipo de investimento: ").lower().strip()
-            if opcao == "a":
-                verifica_investimento("CDB", 12)
-                break
-            elif opcao == "b":
-                verifica_investimento("LCI", 10.05)
-            elif opcao == "c":
-                verifica_investimento("LCA", 10.50)
-            elif opcao == "d":
-                verifica_investimento("Tesouro Direto", 12.50)
-            elif opcao == "e":
-                verifica_investimento("CRI", 11.29)
-            elif opcao == "f":
-                verifica_investimento("CRA", 11.50)
-        elif opcao == "2":
-            print('''======== Investimentos de renda variável ========
-            *Valores estimados
-            [a] Ações
-            [b] FIIs (Fundos de Investimento Imobiliário)
-            [c] ETFs (Exchange Traded Funds)
-            [d] BDRs (Brazilian Depositary Receipts)
-            [e] Criptomoedas (Bitcoin, Ethereum, etc.)
-                  ''')
-            opcao = input("Tipo de investimento: ").lower().strip()
-            if opcao == "a":
-                verifica_investimento("Ações", 15)
-                break
-            elif opcao == "b":
-                verifica_investimento("FIIs", 10)
-                break
-            elif opcao == "c":
-                verifica_investimento("ETFs", 18)
-                break
-            elif opcao == "d":
-                verifica_investimento("BDRs", 18)
-                break
-            elif opcao == "e":
-                verifica_investimento("Criptomoedas", 500)
-                break
-
-            
-def poupanca():
-    global saldo_poupanca
-    global saldo
-    global extrato
+          
+def poupanca(saldo_poupanca, saldo, extrato):
     print("POUPANÇA".center(20, "="))
     print(f''''
     1: Aplicar
@@ -164,11 +125,15 @@ def poupanca():
             valor_aplicacao = verificar_valor_erro()
             if valor_aplicacao > saldo:
                 print(f"Saldo insuficiente para completar a transação.\nSeu saldo é de {saldo:.2f}")
+                break
+            elif valor_aplicacao <= 0:
+                print("Valor inválido")
             else:
                 saldo -= valor_aplicacao
                 saldo_poupanca += valor_aplicacao
                 extrato += f"Aplicação na poupança: R$ {valor_aplicacao:.2f}\n"
                 print(f"Aplicação realizada. Valor: R$:{valor_aplicacao:.2f}")
+                break
         elif opcao_poupanca == "2":
             print(f"Saldo conta poupança: R$: {saldo_poupanca:.2f}")
             valor_resgate = verificar_valor_erro()
@@ -178,57 +143,123 @@ def poupanca():
             else:
                 if valor_resgate > saldo_poupanca:
                     print(f"Saldo insuficiente para resgate.\nSeu saldo é de R$: {saldo_poupanca:.2f}")
+                elif valor_resgate <= 0:
+                    print("Valor inválido")
                 else:
                     saldo_poupanca -= valor_resgate
                     saldo += valor_resgate
                     extrato += f"Resgate da poupança: R$: {valor_resgate:.2f}\n"
                     print(f"Resgate realizado com sucesso. Valor: R$: {valor_resgate:.2f}")
+                    break
         else:
             print("Voltando ao menu.")
             break
 
+def novo_usuario(usuarios):
+    cpf = input("CPF (xxx.xxx.xxx-xx): ")
+    usuario = filtrar_cpf(cpf, usuarios)
+    if usuario == "CPF inválido":
+        print("CPF inválido")
+        return
+    elif usuario == "Usuário já cadastrado":
+        print("Usuário já cadastrado")
+        return
+    else:
+        nome = input("Primeiro nome: ").title().strip()
+        sobrenome = input("Sobrenome: ")
+        data_nascimento = input("Data de nascimento (dd-mm-aaaa): ")
+        endereco = input("Endereço: Logradouro - nro - bairro - cidade/sigla estado: ")
+        usuarios.append({"nome": nome, "data_nascimento": data_nascimento, "cpf": cpf, "endereco": endereco})
+        print("Usuário cadastrado com sucesso")
 
-menu = """
+def filtrar_cpf(cpf, usuarios):
+    usuarios_cadastrado = []
+    for indice, usuario in enumerate(usuarios):
+        if usuarios[indice]["cpf"] == cpf:
+            usuarios_cadastrado.append(cpf)
+    if len(usuarios_cadastrado) == 1:
+        return "Usuário já cadastrado"
+    
+    if "." not in cpf or "-" not in cpf:
+        return "CPF inválido"
+    elif cpf[0] == "." or cpf[-1] == ".":
+        return "CPF inválido"
+    elif "." not in cpf[3] and "." not in cpf[7] and "-" not in cpf[11]:
+       return "CPF inválido"
+    elif len(cpf) < 14 or len(cpf) > 14:
+        return "CPF inválido"
+    else:
+        return"CPF válido"
+
+def criar_conta_nova(agencia, numero_conta, usuarios,contas):
+    cpf = input("Digite o CPF (xxx.xxx.xxx-xx): ")
+    conta_nova = [usuario for usuario in usuarios if usuario["cpf"] == cpf]
+    if len(conta_nova) == 1:
+        numero_conta = len(contas) + 1
+        contas.append({"agencia": agencia, "nome": conta_nova[0]["nome"], "numero_conta": numero_conta, "cpf": cpf})
+    else:
+        print("Usuário não encontrado")
+      
+
+def listar_contas(contas):
+    for conta in contas:
+        print(f"Agência: {conta["agencia"]} - Conta: {conta["numero_conta"]} - nome: {conta["nome"]} - cpf: {conta["cpf"]}")
+
+def main():
+    AGENCIA = "0001"
+    numero_conta = 0
+    saldo = 0
+    LIMITE = 500
+    numero_saques = 0
+    LIMITE_SAQUES = 3
+    extrato = ""
+    depositos_realizados = []
+    investimentos = []
+    saldo_poupanca = 0
+    usuarios = []
+    contas = []
+    menu = """
     Bem-vindo ao DIO Bank. É um prazer ter você aqui com a gente.
     Qual operação deseja realizar?
+    [u] Novo Usuário
+    [c] Abrir Conta
     [d] Deposito
     [s] Sacar
     [e] Extrato
-    [i] Investimento
+    [i] Investimentos
     [p] Poupança
+    [l] Listar contas
     [x] Sair 
 """
-saldo = 0
-limite = 500
-numero_saques = 0
-LIMITE_SAQUES = 3
-extrato = ""
-deposito_realizados = []
-saques_realizados = []
-investimentos = []
-saldo_poupanca = 0
+ 
 
-while True:
-    opcao = input(menu + "Opção: ").lower()
+    while True:
+        opcao = input(menu + "Opção: ").lower()
+        if opcao == "u":
+            if verificar("Novo usuario") == "S":
+                novo_usuario(usuarios)
+        elif opcao == "c":
+            if verificar("Abrir contra") == "S":
+                criar_conta_nova(AGENCIA, numero_conta, usuarios, contas)
+        elif opcao == "d":
+            if verificar("deposito") == "S":
+                saldo, extrato = deposito("Deposito", saldo,extrato,depositos_realizados) 
+        elif opcao == "s":
+            if verificar("saque") == "S":
+               saldo,extrato = saque(txt="saque",saldo=saldo,extrato=extrato,limite=LIMITE,numero_saques=numero_saques,limite_saques=LIMITE_SAQUES)
+        elif opcao == "e":
+            extrato = Extrato(saldo,extrato=extrato)
+        elif opcao == "i":
+            saldo, extrato = investimento(saldo,extrato,investimentos)
+        elif opcao == "p":
+            if verificar("poupança") == "S":
+                saldo_poupanca, saldo, extrato = poupanca(saldo_poupanca, saldo, extrato)
+        elif opcao == "l":
+            listar_contas(contas)
+        elif opcao == "x":
+            break
+        else:
+            print("Operação inválida.")
 
-    if opcao == "d":
-        if verificar("deposito") == "S":
-            deposito("Deposito") 
-    elif opcao == "s":
-        if verificar("saque") == "S":
-            saque("saque")
-    elif opcao == "e":
-        print(" EXTRATO ".center(40, "="))
-        print(extrato)
-        print(f"Saldo: R$: {saldo:.2f}")
-        print("=" * 40)
-    elif opcao == "i":
-        if verificar("investimento") == "S":
-            investimento()
-    elif opcao == "p":
-        if verificar("poupança") == "S":
-            poupanca()
-    elif opcao == "x":
-        break
-    else:
-        print("Operação inválida.")
+
+main()
